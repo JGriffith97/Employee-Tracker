@@ -2,11 +2,13 @@
 const mysql = require('mysql2');
 const inquirer = require('inquirer'); // Version inquirer@8.2.4 to avoid issues
 const cTable = require('console.table');
-const sequelize = require('./config/connection')
+const connection = require('./config/connection')
 
 // Connection required to utilize the mysql import
 // App will be able to create and read tables via inquirer, console.table, mySQL 
 // and the command prompt.
+
+// Use console.table to 
 
 // Depending on the choice, show, update or add to relevant tables. Repeat unless 
 // Quit.
@@ -31,13 +33,13 @@ function inqPrompt() {
   .prompt(initialMenu)
     .then((answers) => {
       if (answers.optionSelection === 'View All Employees') {
-
+        console.table()
       } else if (answers.optionSelection === 'View All Roles') {
-
+        console.table()
       } else if (answers.optionSelection === 'View All Departments') {
-
+        console.table()
       } else if (answers.optionSelection === 'Update Employee Role') {
-
+        
       } else if (answers.optionSelection === 'Add Employee') {
 
       } else if (answers.optionSelection === 'Add Role') {
