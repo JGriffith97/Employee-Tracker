@@ -2,13 +2,20 @@
 const mysql = require('mysql2');
 const inquirer = require('inquirer'); // Version inquirer@8.2.4 to avoid issues
 const cTable = require('console.table');
-const connection = require('./config/connection')
+require('dotenv').config()
 
 // Connection required to utilize the mysql import
 // App will be able to create and read tables via inquirer, console.table, mySQL 
 // and the command prompt.
+const connection = mysql.createConnection({
+  host: 'localhost',
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+});
 
-// Use console.table to 
+// Use console.table to show table elements.
+// Adding to/amending them is another story.
 
 // Depending on the choice, show, update or add to relevant tables. Repeat unless 
 // Quit.
@@ -39,7 +46,7 @@ function inqPrompt() {
       } else if (answers.optionSelection === 'View All Departments') {
         console.table()
       } else if (answers.optionSelection === 'Update Employee Role') {
-        
+
       } else if (answers.optionSelection === 'Add Employee') {
 
       } else if (answers.optionSelection === 'Add Role') {
