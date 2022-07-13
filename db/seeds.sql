@@ -6,14 +6,19 @@ VALUES ("Sales"),
 
 
 INSERT INTO role (title, salary, department_id)
-VALUES ("Sales Lead", 100000, ),
-       ("Sales Associate", 60000, ),
-       ("Lead Engineer", 150000, ),
-       ("Software Engineer", 120000, );
+VALUES ("Sales Lead", 100000, 1),
+       ("Sales Associate", 60000, 2),
+       ("Lead Engineer", 150000, 3),
+       ("Software Engineer", 120000, 4);
+       ("Manager", 160000, 5);
+
+
+INSERT INTO employee (first_name, last_name, role_id)
+VALUES ("Greg", "Franks", 5);
 
 
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
-VALUES ("John", "Wilkins", , 1),
-       ("Thomas", "James", , null),
-       ("Kevin", "Books", , null),
-       ("Sarah", "Graves", , null);
+VALUES ("John", "Wilkins", 1, 1),
+       ("Thomas", "James", 2, null),
+       ("Kevin", "Books", 3, null),
+       ("Sarah", "Graves", 4, null);
