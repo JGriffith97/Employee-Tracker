@@ -2,7 +2,6 @@
 const mysql = require('mysql2');
 const inquirer = require('inquirer'); // Version inquirer@8.2.4 to avoid issues
 const cTable = require('console.table');
-const UI = require('inquirer/lib/ui/baseUI');
 require('dotenv').config()
 
 // Connection required to utilize the mysql import
@@ -16,7 +15,7 @@ const connection = mysql.createConnection(
     password: process.env.DB_PASSWORD,
   },
   console.log(`Connected to the ${process.env.DB_NAME} database.`)
-  );
+);
 
 // Use console.table to show table elements.
 // Adding to/amending them is another story.
@@ -28,50 +27,168 @@ const initialMenu = [
     type: 'list',
     name: 'optionSelection',
     message: 'What would you like to do?',
-    choices: ['View All Employees', 
-              'View All Roles', 
-              'View All Departments', 
-              'Update Employee Role', 'Add Employee', 
-              'Add Role', 
-              'Add Department', 
-              'Quit (or use CTRL+C)'],
+    choices: ['View All Employees',
+      'View All Roles',
+      'View All Departments',
+      'Update Employee Role',
+      'Add Employee',
+      'Add Role',
+      'Add Department',
+      'Quit (or use CTRL+C)'],
   }
 ];
 
 
-// department, role, employee   are the tables.
+// let empOpts;
+// let empOptsArray = [];
+function getEmployees() {
+  let p = new Promise((resolve, reject) => {
+    connection.query('SELECT CONCAT (first_name, " ", last_name) AS "name" FROM employee', async function (err, results) {
+      results.forEach(employees => {
+        for (const key in employees) {
+          empOpts = employees[key]
+          // console.log("empOpts: ", empOpts)
+          // console.log(empOpts)
+          empOptsArray.push(empOpts)
+        }
+      })
+      // console.log("After forEach: ", empOpts)
+      resolve("Resolved")
+      // console.log("empOptsArray in getEmployee: ", empOptsArray)
+    })
+  })
+  // console.log(p)
+  return p
+}
+
+let empRoles;
+let empRolesArray = [];
+function getRole() {
+  let p2 = new Promise((resolve, reject) => {
+    connection.query('SELECT title FROM role', async function (err, results) {
+      // console.log(results)
+      results.forEach(roles => {
+        for (const key in roles) {
+          empRoles = roles[key]
+          empRolesArray.push(empRoles)
+        }
+      })
+      resolve("Resolve")
+      // console.log("empRolesArray in getRole: ", empRolesArray)
+    })
+  })
+  // console.log(p2)
+  return p2
+}
+
+
+// department, role, employee --- are the tables.
 function inqPrompt() {
   inquirer.prompt(initialMenu)
     .then((answers) => {
 
+      // console.log("Answers", typeof answers.optionSelection)
       if (answers.optionSelection === 'View All Employees') {
         // SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name, role.salary FROM employee JOIN role ON employee.role_id = role.id JOIN department ON department.id = role.department_id -- Working (as below)! Successfully joins 3 tables.
-        connection.query('SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name, role.salary FROM employee JOIN role ON employee.role_id = role.id JOIN department ON department.id = role.department_id', function (err, results) {
-          console.table(`\n`, results, `\n`)
+        connection.query('SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name, role.salary FROM employee JOIN role ON employee.role_id = role.id JOIN department ON department.id = role.department_id', async function (err, results) {
+          console.table(`\n`, results)
           inqPrompt()
         })
       } else if (answers.optionSelection === 'View All Roles') {
         connection.query('SELECT role.id, role.title, department.name, role.salary FROM role JOIN department ON role.department_id = department.id', async function (err, results) {
-          console.table(`\n`, results, `\n`)
+          console.table(`\n`, results)
           inqPrompt()
         })
       } else if (answers.optionSelection === 'View All Departments') {
-        connection.query('SELECT department.id, department.name FROM department', function (err, results) {
-          console.table(`\n`, results, `\n`)
+        connection.query('SELECT department.id, department.name FROM department', async function (err, results) {
+          console.table(`\n`, results)
           inqPrompt()
         })
       } else if (answers.optionSelection === 'Update Employee Role') {
 
+        getEmployees().then((result) => {
+
+          let employeeAnswer;
+          let empRoleAnswer;
+          const employees = [
+            {
+              type: 'list',
+              name: 'empOptions',
+              message: "Select the employee you'd like to update.",
+              choices: empOptsArray
+            }
+          ];
+
+          inquirer.prompt(employees)
+            .then((empAnswer) => {
+              employeeAnswer = empAnswer;
+              console.log(employeeAnswer)
+              if (employeeAnswer !== null) {
+                getRole().then((role) => {
+
+                  const roles = [
+                    {
+                      type: 'list',
+                      name: 'empRoles',
+                      message: "Select the new role for the employee.",
+                      choices: empRolesArray
+                    }
+                  ];
+
+                  inquirer.prompt(roles)
+                    .then((rolesAnswer) => {
+                      empRoleAnswer = rolesAnswer;
+                      console.log(empRoleAnswer);
+                    })
+                })
+              }
+            })
+        })
+        const sql = `UPDATE employee SET`
+
       } else if (answers.optionSelection === 'Add Employee') {
+        getRole();
 
+        const addEmpQs = [
+          {
+            type: 'input',
+            name: 'addEmpName',
+            message: "What is the employee's name?",
+          },
+          {
+            type: 'input',
+            name: 'addEmpSalary',
+            message: "Please enter this employee's salary."
+          },
+          {
+            type: 'list',
+            name: 'addEmpDpmnt',
+            message: "",
+            choices: 
+          },
+          {
+            type: 'list',
+            name: 'addEmpJob',
+            message: "What is this employee's role?",
+            choices: empRolesArray
+          }
+        ]
+
+        connection.query()
+        inqPrompt()
       } else if (answers.optionSelection === 'Add Role') {
-
+        connection.query()
+        inqPrompt()
       } else if (answers.optionSelection === 'Add Department') {
-
+        connection.query()
+        inqPrompt()
       } else if (answers.optionSelection === 'Quit (or use CTRL+C)') {
         process.exit()
       }
     })
 }
 
+
 inqPrompt();
+// getEmployees();
+// getRole();

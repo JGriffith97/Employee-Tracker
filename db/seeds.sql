@@ -16,13 +16,13 @@ VALUES (1, "Sales Lead", 100000, 1),
        (8, "Lawyer", 140000, 4);
 
 
-INSERT INTO employee (first_name, last_name, role_id, manager_id)
-VALUES ("John", "Wilkins", 1, null),
-       ("Thomas", "James", 2, 1),
-       ("Kevin", "Books", 3, null),
-       ("Sarah", "Graves", 4, 2),
-       ("Tony", "Wagner", 5, null),
-       ("Elliot", "Mendez", 6, 3),
-       ("Lyla", "Indra", 7, null),
-       ("Charles", "Thomas", 8, 4);
+INSERT INTO employee (id, first_name, last_name, role_id, manager_id)
+VALUES (1, "John", "Wilkins", 1, null),
+       (2, "Thomas", "James", 2, 1),
+       (3, "Kevin", "Books", 3, null),
+       (4, "Sarah", "Graves", 4, 2),
+       (5, "Tony", "Wagner", 5, null),
+       (6, "Elliot", "Mendez", 6, 3),
+       (7, "Lyla", "Indra", 7, null),
+       (8, "Charles", "Thomas", 8, 4);
        
