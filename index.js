@@ -7,6 +7,7 @@ require('dotenv').config()
 // Connection required to utilize the mysql import
 // App will be able to create and read tables via inquirer, console.table, mySQL 
 // and the command prompt.
+
 const connection = mysql.createConnection(
   {
     host: 'localhost',
@@ -22,6 +23,7 @@ const connection = mysql.createConnection(
 
 // Depending on the choice, show, update or add to relevant tables. Repeat unless 
 // Quit. Therefore, I want to be able to reuse this variable.
+
 const initialMenu = [
   {
     type: 'list',
@@ -94,16 +96,19 @@ function inqPrompt() {
           console.table(`\n`, results)
           inqPrompt()
         })
+
       } else if (answers.optionSelection === 'View All Roles') {
         connection.query('SELECT role.id, role.title, department.name, role.salary FROM role JOIN department ON role.department_id = department.id', async function (err, results) {
           console.table(`\n`, results)
           inqPrompt()
         })
+
       } else if (answers.optionSelection === 'View All Departments') {
         connection.query('SELECT department.id, department.name FROM department', async function (err, results) {
           console.table(`\n`, results)
           inqPrompt()
         })
+
       } else if (answers.optionSelection === 'Update Employee Role') {
 
         getEmployees().then((result) => {
@@ -145,6 +150,7 @@ function inqPrompt() {
             })
         })
         const sql = `UPDATE employee SET`
+        connection.query()
 
       } else if (answers.optionSelection === 'Add Employee') {
         getRole();
@@ -152,36 +158,91 @@ function inqPrompt() {
         const addEmpQs = [
           {
             type: 'input',
-            name: 'addEmpName',
-            message: "What is the employee's name?",
+            name: 'addEmpFirstName',
+            message: "What is the employee's first name?",
           },
           {
             type: 'input',
-            name: 'addEmpSalary',
-            message: "Please enter this employee's salary."
-          },
-          {
-            type: 'list',
-            name: 'addEmpDpmnt',
-            message: "",
-            choices: 
+            name: 'addEmpLastName',
+            message: "What is the employee's last name?"
           },
           {
             type: 'list',
             name: 'addEmpJob',
             message: "What is this employee's role?",
             choices: empRolesArray
+          },
+          {
+            type: 'list',
+            name: 'addEmpManager',
+            message: "Does this employee have a manager?",
+            choices: [],
           }
         ]
 
         connection.query()
         inqPrompt()
+
       } else if (answers.optionSelection === 'Add Role') {
+
+        const addRoleQs = [
+          {
+            type: 'input',
+            name: roleName,
+            message: "What is the name of the new role?",
+          },
+          {
+            type: 'number',
+            name: roleSalary,
+            message: "What is the salary of this role?"
+          },
+          {
+            type: 'list',
+            name: roleDepartment,
+            message: "To which department does this role belong?",
+            choices: [],
+          }
+        ];
+
         connection.query()
         inqPrompt()
+
       } else if (answers.optionSelection === 'Add Department') {
-        connection.query()
-        inqPrompt()
+
+        const addDepQs = [
+          {
+            type: "input",
+            name: "addDpmnt",
+            message: "What is the name of the new department?",
+          }
+        ];
+
+        inquirer.prompt(addDepQs)
+        .then((answers) => {
+          let newDepartment;
+          if (answers.addDpmnt) {
+            newDepartment = answers.addDpmnt
+           
+            const sql = `INSERT INTO department (name)
+              VALUES (?)`;
+            connection.query(sql, newDepartment, (err, result) => {
+              if (err) {
+                console.log("Failure to insert into table.")
+              }
+              else {
+                console.log("\n", "New department successfully added.")
+                connection.query("SELECT * FROM department", async function (err, results) {
+                  console.table("\n", results)
+                  inqPrompt()
+                })
+              }
+            })
+          } else {
+            console.log("\n", "Error in Add Department")
+            process.exit()
+          }
+        })
+
       } else if (answers.optionSelection === 'Quit (or use CTRL+C)') {
         process.exit()
       }
