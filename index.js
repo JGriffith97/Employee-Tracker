@@ -96,19 +96,19 @@ function inqPrompt() {
           console.table(`\n`, results)
           inqPrompt()
         })
-
+// ----------------------------------------------------------------------------------------------------- //
       } else if (answers.optionSelection === 'View All Roles') {
         connection.query('SELECT role.id, role.title, department.name, role.salary FROM role JOIN department ON role.department_id = department.id', async function (err, results) {
           console.table(`\n`, results)
           inqPrompt()
         })
-
+// ----------------------------------------------------------------------------------------------------- //
       } else if (answers.optionSelection === 'View All Departments') {
         connection.query('SELECT department.id, department.name FROM department', async function (err, results) {
           console.table(`\n`, results)
           inqPrompt()
         })
-
+// ----------------------------------------------------------------------------------------------------- //
       } else if (answers.optionSelection === 'Update Employee Role') {
 
         getEmployees().then((result) => {
@@ -151,7 +151,7 @@ function inqPrompt() {
         })
         const sql = `UPDATE employee SET`
         connection.query()
-
+// ----------------------------------------------------------------------------------------------------- //
       } else if (answers.optionSelection === 'Add Employee') {
         getRole();
 
@@ -182,7 +182,7 @@ function inqPrompt() {
 
         connection.query()
         inqPrompt()
-
+// ----------------------------------------------------------------------------------------------------- //
       } else if (answers.optionSelection === 'Add Role') {
 
         const addRoleQs = [
@@ -206,7 +206,7 @@ function inqPrompt() {
 
         connection.query()
         inqPrompt()
-
+// ----------------------------------------------------------------------------------------------------- //
       } else if (answers.optionSelection === 'Add Department') {
 
         const addDepQs = [
@@ -242,7 +242,7 @@ function inqPrompt() {
             process.exit()
           }
         })
-
+// ----------------------------------------------------------------------------------------------------- //
       } else if (answers.optionSelection === 'Quit (or use CTRL+C)') {
         process.exit()
       }
