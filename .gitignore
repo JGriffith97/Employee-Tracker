@@ -1,2 +1,4 @@
 Assets/
+node_modules/
 README-original.md
+.env
