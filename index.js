@@ -98,7 +98,7 @@ function getRoles() {
 let empDptsArray = [];
 function getDepartment() {
   let p3 = new Promise((resolve, reject) => {
-    connection.query('SELECT name FROM department', async function (err, results) {
+    connection.query('SELECT id, name FROM department', async function (err, results) {
       empDptsArray = results
 
       resolve("Resolve")
@@ -274,7 +274,6 @@ function inqPrompt() {
                     const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id)
                                  VALUES (?, ?, ?, ?)`
                     const params = [empAnswers.addEmpFirstName, empAnswers.addEmpLastName, empAnswers.addEmpJob, empManagerAnswers.managerId]
-                    console.log(params)
                     connection.query(sql, params, (err, result) => {
                       if (err) {
                         console.log('Error - line 280')
@@ -293,30 +292,52 @@ function inqPrompt() {
 
 // ----------------------------------------------------------------------------------------------------- //
       } else if (answers.optionSelection === 'Add Role') {
-        getDepartment().then((result) => {
+        getDepartment().then((department) => {
           
-        })
-        const addRoleQs = [
-          {
-            type: 'input',
-            name: 'addRoleName',
-            message: "What is the name of the new role?",
-          },
-          {
-            type: 'number',
-            name: 'addRoleSalary',
-            message: "What is the salary of this role?"
-          },
-          {
-            type: 'list',
-            name: 'addRoleDepartment',
-            message: "To which department does this role belong?",
-            choices: [],
-          }
-        ];
+          var DepPromptObjs = []
+          empDptsArray.forEach(dep => {
+            let newDepObj = {
+              name: dep.name,
+              value: dep.id
+            }
+            DepPromptObjs.push(newDepObj)
+          })
 
-        connection.query()
-        inqPrompt()
+          const addRoleQs = [
+            {
+              type: 'input',
+              name: 'addRoleName',
+              message: "What is the name of the new role?",
+            },
+            {
+              type: 'number',
+              name: 'addRoleSalary',
+              message: "What is the salary of this role?"
+            },
+            {
+              type: 'list',
+              name: 'addRoleDepartment',
+              message: "To which department does this role belong?",
+              choices: DepPromptObjs
+            }
+          ];
+
+          inquirer.prompt(addRoleQs)
+            .then((answers) => {
+              const sql = `INSERT INTO role (title, salary, department_id)
+                           VALUES (?, ?, ?)`
+              const params = [answers.addRoleName, answers.addRoleSalary, answers.addRoleDepartment]
+              connection.query(sql, params, (err, result) => {
+                if (err) {
+                  console.log('Error - Line 333')
+                } else {
+                  console.log('Success')
+                }
+                inqPrompt()
+              })
+            })
+        })
+
 // ----------------------------------------------------------------------------------------------------- //
       } else if (answers.optionSelection === 'Add Department') {
 
