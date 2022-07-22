@@ -61,3 +61,5 @@ all without asking permission. See Other Information below.<br/>
 <br/>
 
 Created by Jayden Griffith -- @GitHub: [JGriffith97](https://github.com/JGriffith97) -- LinkedIn: [Jayden Griffith](https://www.linkedin.com/in/jayden-griffith-a3b7b9217/)
+
+Walkthrough Video: https://drive.google.com/file/d/1GWfnAdJP_QqRhG_15R6w7fnqYXHkRC93/view
