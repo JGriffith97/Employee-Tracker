@@ -40,20 +40,17 @@ const initialMenu = [
   }
 ];
 
+// ----------------------------------------------------------------------------------------------------- //
 
 // let empOpts;
-// let empOptsArray = [];
+let empOptsArray = [];
 function getEmployees() {
   let p = new Promise((resolve, reject) => {
-    connection.query('SELECT CONCAT (first_name, " ", last_name) AS "name" FROM employee', async function (err, results) {
-      results.forEach(employees => {
-        for (const key in employees) {
-          empOpts = employees[key]
-          // console.log("empOpts: ", empOpts)
-          // console.log(empOpts)
-          empOptsArray.push(empOpts)
-        }
-      })
+    // connection.query('SELECT CONCAT (first_name, " ", last_name) AS "name" FROM employee', async function (err, results) {
+      connection.query('SELECT * FROM employee', async function (err, results) {
+
+      empOptsArray = results
+      // console.log("line 56", empOptsArray)
       // console.log("After forEach: ", empOpts)
       resolve("Resolved")
       // console.log("empOptsArray in getEmployee: ", empOptsArray)
@@ -63,26 +60,40 @@ function getEmployees() {
   return p
 }
 
-let empRoles;
+// ----------------------------------------------------------------------------------------------------- //
+
+// let empRoles;
 let empRolesArray = [];
-function getRole() {
+function getRoles() {
   let p2 = new Promise((resolve, reject) => {
-    connection.query('SELECT title FROM role', async function (err, results) {
-      // console.log(results)
-      results.forEach(roles => {
-        for (const key in roles) {
-          empRoles = roles[key]
-          empRolesArray.push(empRoles)
-        }
-      })
+    connection.query('SELECT * FROM role', async function (err, results) {
+      empRolesArray = results 
+
       resolve("Resolve")
-      // console.log("empRolesArray in getRole: ", empRolesArray)
+      // console.log("empRolesArray in getRoles: ", empRolesArray)
     })
   })
   // console.log(p2)
   return p2
 }
 
+// ----------------------------------------------------------------------------------------------------- //
+
+// let empDpts;
+let empDptsArray = [];
+function getDepartment() {
+  let p3 = new Promise((resolve, reject) => {
+    connection.query('SELECT name FROM department', async function (err, results) {
+      empDptsArray = results
+
+      resolve("Resolve")
+      // console.log("Employee Departments Array: ", empDptsArray)
+    })
+  })
+  return p3
+}
+
+// ----------------------------------------------------------------------------------------------------- //
 
 // department, role, employee --- are the tables.
 function inqPrompt() {
@@ -111,94 +122,133 @@ function inqPrompt() {
 // ----------------------------------------------------------------------------------------------------- //
       } else if (answers.optionSelection === 'Update Employee Role') {
 
+       
         getEmployees().then((result) => {
-
           let employeeAnswer;
           let empRoleAnswer;
+
+          var empPromptObjects = []
+          empOptsArray.forEach(emp => {
+            let newEmpObj = {
+              name: `${emp.first_name} ${emp.last_name}`,
+              value: emp
+            }
+            empPromptObjects.push(newEmpObj);
+          })
+
           const employees = [
             {
               type: 'list',
               name: 'empOptions',
               message: "Select the employee you'd like to update.",
-              choices: empOptsArray
+              choices: empPromptObjects
             }
           ];
 
+         
+
           inquirer.prompt(employees)
             .then((empAnswer) => {
-              employeeAnswer = empAnswer;
-              console.log(employeeAnswer)
+              // console.log("empAnswer - 148: ", empAnswer)
+
+              employeeAnswer = empAnswer.empOptions;
               if (employeeAnswer !== null) {
-                getRole().then((role) => {
+                getRoles().then((role) => {
+
+                  var rolesPromptObjects = []
+                  empRolesArray.forEach(role => {
+                    let newRoleObj = {
+                      name: role.title,
+                      value: role
+                    }
+                    rolesPromptObjects.push(newRoleObj);
+                  })
 
                   const roles = [
                     {
                       type: 'list',
                       name: 'empRoles',
                       message: "Select the new role for the employee.",
-                      choices: empRolesArray
+                      choices: rolesPromptObjects
                     }
                   ];
 
                   inquirer.prompt(roles)
                     .then((rolesAnswer) => {
-                      empRoleAnswer = rolesAnswer;
-                      console.log(empRoleAnswer);
+                      // console.log("Line 193", rolesAnswer)
+                      empRoleAnswer = rolesAnswer.empRoles;
+                      // console.log(empRoleAnswer);
+
+                      const sql = `UPDATE employee SET role_id = ? WHERE id = ?`
+                      const params = [empRoleAnswer.id, employeeAnswer.id]
+                      connection.query(sql, params, (err, result) => {
+                        if (err) {
+                          console.log('Error - line 205')
+                        } else {
+                          console.log("Success")
+                        }
+                        inqPrompt()
+                      })
                     })
                 })
               }
             })
         })
-        const sql = `UPDATE employee SET`
-        connection.query()
+        
 // ----------------------------------------------------------------------------------------------------- //
       } else if (answers.optionSelection === 'Add Employee') {
-        getRole();
 
-        const addEmpQs = [
-          {
-            type: 'input',
-            name: 'addEmpFirstName',
-            message: "What is the employee's first name?",
-          },
-          {
-            type: 'input',
-            name: 'addEmpLastName',
-            message: "What is the employee's last name?"
-          },
-          {
-            type: 'list',
-            name: 'addEmpJob',
-            message: "What is this employee's role?",
-            choices: empRolesArray
-          },
-          {
-            type: 'list',
-            name: 'addEmpManager',
-            message: "Does this employee have a manager?",
-            choices: [],
-          }
-        ]
+        getRoles().then((result) => {
 
-        connection.query()
-        inqPrompt()
+          const addEmpQs = [
+            {
+              type: 'input',
+              name: 'addEmpFirstName',
+              message: "What is the employee's first name?",
+            },
+            {
+              type: 'input',
+              name: 'addEmpLastName',
+              message: "What is the employee's last name?"
+            },
+            {
+              type: 'list',
+              name: 'addEmpJob',
+              message: "What is this employee's role?",
+              choices: empRolesArray
+            },
+            {
+              type: 'list',
+              name: 'addEmpManager',
+              message: "Whom is this employee's manager?",
+              choices: []
+            }
+          ];
+          connection.query()
+          inqPrompt()
+        });
+
+
+
 // ----------------------------------------------------------------------------------------------------- //
       } else if (answers.optionSelection === 'Add Role') {
-
+        getDepartment().then((result) => {
+          
+        })
         const addRoleQs = [
           {
             type: 'input',
-            name: roleName,
+            name: 'addRoleName',
             message: "What is the name of the new role?",
           },
           {
             type: 'number',
-            name: roleSalary,
+            name: 'addRoleSalary',
             message: "What is the salary of this role?"
           },
           {
             type: 'list',
-            name: roleDepartment,
+            name: 'addRoleDepartment',
             message: "To which department does this role belong?",
             choices: [],
           }
@@ -249,7 +299,10 @@ function inqPrompt() {
     })
 }
 
+// ----------------------------------------------------------------------------------------------------- //
+// Function callers. inqPrompt is main. The rest are for testing the individual functions. 
 
 inqPrompt();
 // getEmployees();
-// getRole();
+// getRoles();
+// getDepartment();
