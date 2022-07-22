@@ -45,7 +45,6 @@ let empOptsArray = [];
 function getEmployees() {
   let p = new Promise((resolve, reject) => {
       connection.query('SELECT * FROM employee', async function (err, results) {
-        console.log(results)
       empOptsArray = results
       resolve("Resolved")
     })
@@ -59,7 +58,6 @@ function getManager() {
   let p4 = new Promise((resolve, reject) => {
     connection.query('SELECT id, first_name, last_name FROM employee WHERE manager_id IS NULL', async function (err, results) {
       managersArray = results
-
       resolve("Resolved")
     })
   })
@@ -72,7 +70,6 @@ function getRoles() {
   let p2 = new Promise((resolve, reject) => {
     connection.query('SELECT id, title FROM role', async function (err, results) {
       empRolesArray = results 
-
       resolve("Resolve")
     })
   })
@@ -85,7 +82,6 @@ function getDepartment() {
   let p3 = new Promise((resolve, reject) => {
     connection.query('SELECT id, name FROM department', async function (err, results) {
       empDptsArray = results
-
       resolve("Resolve")
     })
   })
@@ -174,7 +170,7 @@ function inqPrompt() {
                       const params = [empRoleAnswer.id, employeeAnswer.id]
                       connection.query(sql, params, (err, result) => {
                         if (err) {
-                          console.log('Error - line 177')
+                          console.log(err)
                         } else {
                           console.log("Success")
                         }
@@ -234,7 +230,7 @@ function inqPrompt() {
                   }
                   managerPromptObjects.push(managerObj)
                 })
-                
+
                 const managerQ = [
                   {
                     type: 'list',
@@ -253,7 +249,7 @@ function inqPrompt() {
                     const params = [empAnswers.addEmpFirstName, empAnswers.addEmpLastName, empAnswers.addEmpJob, empManagerAnswers.managerId]
                     connection.query(sql, params, (err, result) => {
                       if (err) {
-                        console.log('Error - line 256')
+                        console.log(err)
                       } else {
                         console.log('Success')
                       }
@@ -303,7 +299,7 @@ function inqPrompt() {
               const params = [answers.addRoleName, answers.addRoleSalary, answers.addRoleDepartment]
               connection.query(sql, params, (err, result) => {
                 if (err) {
-                  console.log('Error - Line 306')
+                  console.log(err)
                 } else {
                   console.log('Success')
                 }
