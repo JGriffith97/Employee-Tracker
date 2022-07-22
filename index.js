@@ -39,7 +39,6 @@ const initialMenu = [
       'Quit (or use CTRL+C)'],
   }
 ];
-
 // ----------------------------------------------------------------------------------------------------- //
 
 let empOptsArray = [];
@@ -53,7 +52,6 @@ function getEmployees() {
   })
   return p
 }
-
 // ----------------------------------------------------------------------------------------------------- //
 
 let managersArray = []
@@ -67,7 +65,6 @@ function getManager() {
   })
   return p4
 }
-
 // ----------------------------------------------------------------------------------------------------- //
 
 let empRolesArray = [];
@@ -81,7 +78,6 @@ function getRoles() {
   })
   return p2
 }
-
 // ----------------------------------------------------------------------------------------------------- //
 
 let empDptsArray = [];
@@ -95,7 +91,6 @@ function getDepartment() {
   })
   return p3
 }
-
 // ----------------------------------------------------------------------------------------------------- //
 
 // department, role, employee --- are the tables.
@@ -179,7 +174,7 @@ function inqPrompt() {
                       const params = [empRoleAnswer.id, employeeAnswer.id]
                       connection.query(sql, params, (err, result) => {
                         if (err) {
-                          console.log('Error - line 182')
+                          console.log('Error - line 177')
                         } else {
                           console.log("Success")
                         }
@@ -190,7 +185,6 @@ function inqPrompt() {
               }
             })
         })
-        
 // ----------------------------------------------------------------------------------------------------- //
       } else if (answers.optionSelection === 'Add Employee') {
 
@@ -240,7 +234,7 @@ function inqPrompt() {
                   }
                   managerPromptObjects.push(managerObj)
                 })
-                console.log("Line 243: ", managerPromptObjects)
+                
                 const managerQ = [
                   {
                     type: 'list',
@@ -259,7 +253,7 @@ function inqPrompt() {
                     const params = [empAnswers.addEmpFirstName, empAnswers.addEmpLastName, empAnswers.addEmpJob, empManagerAnswers.managerId]
                     connection.query(sql, params, (err, result) => {
                       if (err) {
-                        console.log('Error - line 262')
+                        console.log('Error - line 256')
                       } else {
                         console.log('Success')
                       }
@@ -270,9 +264,6 @@ function inqPrompt() {
               })
             })
         });
-
-
-
 // ----------------------------------------------------------------------------------------------------- //
       } else if (answers.optionSelection === 'Add Role') {
         getDepartment().then((department) => {
@@ -312,7 +303,7 @@ function inqPrompt() {
               const params = [answers.addRoleName, answers.addRoleSalary, answers.addRoleDepartment]
               connection.query(sql, params, (err, result) => {
                 if (err) {
-                  console.log('Error - Line 315')
+                  console.log('Error - Line 306')
                 } else {
                   console.log('Success')
                 }
@@ -320,7 +311,6 @@ function inqPrompt() {
               })
             })
         })
-
 // ----------------------------------------------------------------------------------------------------- //
       } else if (answers.optionSelection === 'Add Department') {
 
@@ -363,7 +353,6 @@ function inqPrompt() {
       }
     })
 }
-
 // ----------------------------------------------------------------------------------------------------- //
 // Function callers. inqPrompt is main. The rest are for testing the individual functions. 
 
