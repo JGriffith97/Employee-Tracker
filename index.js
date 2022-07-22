@@ -48,7 +48,7 @@ function getEmployees() {
   let p = new Promise((resolve, reject) => {
     // connection.query('SELECT CONCAT (first_name, " ", last_name) AS "name" FROM employee', async function (err, results) {
       connection.query('SELECT * FROM employee', async function (err, results) {
-
+        console.log(results)
       empOptsArray = results
       // console.log("line 56", empOptsArray)
       // console.log("After forEach: ", empOpts)
@@ -62,11 +62,26 @@ function getEmployees() {
 
 // ----------------------------------------------------------------------------------------------------- //
 
+let managersArray = []
+function getManager() {
+  let p4 = new Promise((resolve, reject) => {
+    connection.query('SELECT id, first_name, last_name FROM employee WHERE manager_id IS NULL', async function (err, results) {
+      managersArray = results
+
+      // console.log('Managers: ', managersArray)
+      resolve("Resolved")
+    })
+  })
+  return p4
+}
+
+// ----------------------------------------------------------------------------------------------------- //
+
 // let empRoles;
 let empRolesArray = [];
 function getRoles() {
   let p2 = new Promise((resolve, reject) => {
-    connection.query('SELECT * FROM role', async function (err, results) {
+    connection.query('SELECT id, title FROM role', async function (err, results) {
       empRolesArray = results 
 
       resolve("Resolve")
@@ -145,8 +160,6 @@ function inqPrompt() {
             }
           ];
 
-         
-
           inquirer.prompt(employees)
             .then((empAnswer) => {
               // console.log("empAnswer - 148: ", empAnswer)
@@ -183,7 +196,7 @@ function inqPrompt() {
                       const params = [empRoleAnswer.id, employeeAnswer.id]
                       connection.query(sql, params, (err, result) => {
                         if (err) {
-                          console.log('Error - line 205')
+                          console.log('Error - line 199')
                         } else {
                           console.log("Success")
                         }
@@ -199,6 +212,17 @@ function inqPrompt() {
       } else if (answers.optionSelection === 'Add Employee') {
 
         getRoles().then((result) => {
+          let empAnswers;
+          let empManagerAnswers;
+
+          var rolePromptObjs = []
+          empRolesArray.forEach(role => {
+            let newRoleObj = {
+              name: role.title,
+              value: role.id
+            }
+            rolePromptObjs.push(newRoleObj)
+          })
 
           const addEmpQs = [
             {
@@ -215,17 +239,54 @@ function inqPrompt() {
               type: 'list',
               name: 'addEmpJob',
               message: "What is this employee's role?",
-              choices: empRolesArray
+              choices: rolePromptObjs
             },
-            {
-              type: 'list',
-              name: 'addEmpManager',
-              message: "Whom is this employee's manager?",
-              choices: []
-            }
           ];
-          connection.query()
-          inqPrompt()
+
+          inquirer.prompt(addEmpQs)
+            .then((answers) => {
+              empAnswers = answers
+
+              getManager().then((manager) => {
+                
+                var managerPromptObjects = []
+                managersArray.forEach(mngr => {
+                  let managerObj = {
+                    name: `${mngr.first_name} ${mngr.last_name}`,
+                    value: mngr.id
+                  }
+                  managerPromptObjects.push(managerObj)
+                })
+                console.log("Line 260: ", managerPromptObjects)
+                const managerQ = [
+                  {
+                    type: 'list',
+                    name: 'managerId',
+                    message: "Whom is this employee's manager?",
+                    choices: managerPromptObjects
+                  }
+                ];
+
+                inquirer.prompt(managerQ)
+                  .then((managerAnswer) => {
+                    empManagerAnswers = managerAnswer
+
+                    const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id)
+                                 VALUES (?, ?, ?, ?)`
+                    const params = [empAnswers.addEmpFirstName, empAnswers.addEmpLastName, empAnswers.addEmpJob, empManagerAnswers.managerId]
+                    console.log(params)
+                    connection.query(sql, params, (err, result) => {
+                      if (err) {
+                        console.log('Error - line 280')
+                      } else {
+                        console.log('Success')
+                      }
+                      inqPrompt()
+                    })
+                  })
+
+              })
+            })
         });
 
 
@@ -304,5 +365,6 @@ function inqPrompt() {
 
 inqPrompt();
 // getEmployees();
+// getManager();
 // getRoles();
 // getDepartment();
