@@ -42,21 +42,15 @@ const initialMenu = [
 
 // ----------------------------------------------------------------------------------------------------- //
 
-// let empOpts;
 let empOptsArray = [];
 function getEmployees() {
   let p = new Promise((resolve, reject) => {
-    // connection.query('SELECT CONCAT (first_name, " ", last_name) AS "name" FROM employee', async function (err, results) {
       connection.query('SELECT * FROM employee', async function (err, results) {
         console.log(results)
       empOptsArray = results
-      // console.log("line 56", empOptsArray)
-      // console.log("After forEach: ", empOpts)
       resolve("Resolved")
-      // console.log("empOptsArray in getEmployee: ", empOptsArray)
     })
   })
-  // console.log(p)
   return p
 }
 
@@ -68,7 +62,6 @@ function getManager() {
     connection.query('SELECT id, first_name, last_name FROM employee WHERE manager_id IS NULL', async function (err, results) {
       managersArray = results
 
-      // console.log('Managers: ', managersArray)
       resolve("Resolved")
     })
   })
@@ -77,7 +70,6 @@ function getManager() {
 
 // ----------------------------------------------------------------------------------------------------- //
 
-// let empRoles;
 let empRolesArray = [];
 function getRoles() {
   let p2 = new Promise((resolve, reject) => {
@@ -85,16 +77,13 @@ function getRoles() {
       empRolesArray = results 
 
       resolve("Resolve")
-      // console.log("empRolesArray in getRoles: ", empRolesArray)
     })
   })
-  // console.log(p2)
   return p2
 }
 
 // ----------------------------------------------------------------------------------------------------- //
 
-// let empDpts;
 let empDptsArray = [];
 function getDepartment() {
   let p3 = new Promise((resolve, reject) => {
@@ -102,7 +91,6 @@ function getDepartment() {
       empDptsArray = results
 
       resolve("Resolve")
-      // console.log("Employee Departments Array: ", empDptsArray)
     })
   })
   return p3
@@ -115,9 +103,7 @@ function inqPrompt() {
   inquirer.prompt(initialMenu)
     .then((answers) => {
 
-      // console.log("Answers", typeof answers.optionSelection)
       if (answers.optionSelection === 'View All Employees') {
-        // SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name, role.salary FROM employee JOIN role ON employee.role_id = role.id JOIN department ON department.id = role.department_id -- Working (as below)! Successfully joins 3 tables.
         connection.query('SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name, role.salary FROM employee JOIN role ON employee.role_id = role.id JOIN department ON department.id = role.department_id', async function (err, results) {
           console.table(`\n`, results)
           inqPrompt()
@@ -162,7 +148,6 @@ function inqPrompt() {
 
           inquirer.prompt(employees)
             .then((empAnswer) => {
-              // console.log("empAnswer - 148: ", empAnswer)
 
               employeeAnswer = empAnswer.empOptions;
               if (employeeAnswer !== null) {
@@ -188,15 +173,13 @@ function inqPrompt() {
 
                   inquirer.prompt(roles)
                     .then((rolesAnswer) => {
-                      // console.log("Line 193", rolesAnswer)
                       empRoleAnswer = rolesAnswer.empRoles;
-                      // console.log(empRoleAnswer);
 
                       const sql = `UPDATE employee SET role_id = ? WHERE id = ?`
                       const params = [empRoleAnswer.id, employeeAnswer.id]
                       connection.query(sql, params, (err, result) => {
                         if (err) {
-                          console.log('Error - line 199')
+                          console.log('Error - line 182')
                         } else {
                           console.log("Success")
                         }
@@ -257,7 +240,7 @@ function inqPrompt() {
                   }
                   managerPromptObjects.push(managerObj)
                 })
-                console.log("Line 260: ", managerPromptObjects)
+                console.log("Line 243: ", managerPromptObjects)
                 const managerQ = [
                   {
                     type: 'list',
@@ -276,7 +259,7 @@ function inqPrompt() {
                     const params = [empAnswers.addEmpFirstName, empAnswers.addEmpLastName, empAnswers.addEmpJob, empManagerAnswers.managerId]
                     connection.query(sql, params, (err, result) => {
                       if (err) {
-                        console.log('Error - line 280')
+                        console.log('Error - line 262')
                       } else {
                         console.log('Success')
                       }
@@ -329,7 +312,7 @@ function inqPrompt() {
               const params = [answers.addRoleName, answers.addRoleSalary, answers.addRoleDepartment]
               connection.query(sql, params, (err, result) => {
                 if (err) {
-                  console.log('Error - Line 333')
+                  console.log('Error - Line 315')
                 } else {
                   console.log('Success')
                 }
